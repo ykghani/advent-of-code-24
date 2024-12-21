@@ -16,5 +16,8 @@ with open(file_path, 'r') as f:
         elif ',' in line.strip():
             print_seqs.append(list(map(int, line.split(','))))
 
+part_one = 0 
 for seq in print_seqs:
-    pass 
+    for idx, num in enumerate(seq):
+        afters = [rule[1] for rule in ordering_rules]
+        
