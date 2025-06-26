@@ -30,23 +30,6 @@ def check_direction(start_x, start_y, dx, dy):
         
     return True, positions_found
 
-def check_mas(x, y, dx, dy):
-    """Check for 'MAS' or 'SAM' in given direction starting at (x,y)"""
-    if not is_valid(x, y) or not is_valid(x + 2 * dx, y + 2 * dy):
-        return False, [], ""
-    
-    # Get the three characters in this direction
-    chars = [grid[x + i * dx][y + i * dy] for i in range(3)]
-    sequence = ''.join(chars)
-    positions = [(x + i * dx, y + i * dy) for i in range(3)]
-    
-    # Check if it's 'MAS' forward or 'SAM' backward
-    if sequence == 'MAS':
-        return True, positions, 'MAS'
-    elif sequence == 'SAM':
-        return True, positions, 'SAM'
-    return False, [], ""
-
 grid = []
 with open(file_path, 'r') as f: 
     for line in f:
@@ -62,20 +45,21 @@ for x in range(x_lim):
                 found, pos = check_direction(x, y, dx, dy)
                 if found: 
                     part_one += 1
-        elif grid[x][y] == 'A':
-            for (dx1, dy1), (dx2, dy2) in diagonals:
-                found1, pos1, seq1 = check_mas(x + dx1, y + dy1, dx1, dy1)
-                if not found1:
-                    continue
-                    
-                found2, pos2, seq2 = check_mas(x + dx2, y + dy2, dx2, dy2)
-                if not found2:
-                    continue
-                
-                # Found valid X-MAS pattern
-                part_two += 1
-                # Include center position and both diagonals
-                pattern_positions = [(x, y)] + pos1 + pos2
-                positions.append(pattern_positions)
+
 print(f"Part one: {part_one}")
+
+def is_xmas(x, y, grid= grid) -> bool:
+    '''Returns true if char is center of X-MAS shape and False otherwise'''
+    comparator = {'M', 'S'}
+    if grid[y][x] != "A":
+        return False
+    else:
+        return {grid[y + 1][x - 1], grid[y - 1][x + 1]} == comparator and {grid[y - 1][x - 1], grid[y + 1][x + 1]} == comparator
+
+#Part Two#
+for y in range(1, y_lim - 1):
+    for x in range(1, x_lim - 1): #Stay within bounding box to prevent index out of range issues
+        if is_xmas(y, x, grid):
+            part_two += 1
+
 print(f"Part two : {part_two}")
